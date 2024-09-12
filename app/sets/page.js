@@ -13,7 +13,6 @@ import {
 	updateDoc,
 	where,
 } from "firebase/firestore";
-import { useSearchParams } from "next/navigation"; // Add this import
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "../components/button";
 import { Search } from "../components/search";
@@ -31,13 +30,27 @@ import {
 	ref as storageRef,
 	uploadBytes,
 } from "firebase/storage";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Card } from "../components/card";
 import { Chart } from "../components/chart";
 import AddCopierModal from "../components/sets/AddCopierModal";
 
+function SetsPageContent() {
+	const searchParams = useSearchParams();
+	return <SetsPageInner searchParams={searchParams} />;
+}
+
 export default function SetsPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<SetsPageContent />
+		</Suspense>
+	);
+}
+
+function SetsPageInner({ searchParams }) {
 	const { user, loading } = useAuth();
-	const searchParams = useSearchParams(); // Add this line
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [sets, setSets] = useState([]);

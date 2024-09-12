@@ -11,7 +11,7 @@ import {
 	query,
 	updateDoc,
 } from "firebase/firestore"; // Add this import
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "../components/button";
 import EditCycleModal from "../components/cycles/EditCycleModal"; // Add this import
@@ -20,10 +20,22 @@ import { SideBar } from "../components/sidebar";
 import { Spinner } from "../components/spinner";
 import Table from "../components/table";
 
+function CyclesPageContent() {
+	const searchParams = useSearchParams();
+	return <CyclesPageInner searchParams={searchParams} />;
+}
+
 export default function CyclesPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<CyclesPageContent />
+		</Suspense>
+	);
+}
+
+function CyclesPageInner({ searchParams }) {
 	const { user } = useAuth();
 	const router = useRouter();
-	const searchParams = useSearchParams();
 	const [loading, setLoading] = useState(true);
 	const [cycles, setCycles] = useState([]);
 	const optId = searchParams.get("optId");

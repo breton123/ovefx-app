@@ -21,7 +21,7 @@ import {
 	uploadBytes,
 } from "firebase/storage";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Button } from "../components/button";
 import { Search } from "../components/search";
 import { Select } from "../components/select";
@@ -29,9 +29,21 @@ import { SideBar } from "../components/sidebar";
 import { Spinner } from "../components/spinner";
 import Table from "../components/table";
 
-export default function OptSetsPage() {
-	const router = useRouter();
+function OptsSetsPageContent() {
 	const searchParams = useSearchParams();
+	return <OptSetsPageInner searchParams={searchParams} />;
+}
+
+export default function OptSetsPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<OptsSetsPageContent />
+		</Suspense>
+	);
+}
+
+function OptSetsPageInner({ searchParams }) {
+	const router = useRouter();
 	const { user } = useAuth();
 	const [loading, setLoading] = useState(true);
 	const [sets, setSets] = useState([]);

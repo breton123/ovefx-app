@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { calculatePercentageChange } from "@/lib/utils"; // Assume this function exists
 import { collection, doc, onSnapshot, query } from "firebase/firestore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
 	CartesianGrid,
@@ -22,10 +22,22 @@ import { SideBar } from "../components/sidebar";
 import { Spinner } from "../components/spinner";
 import Table from "../components/table";
 
-export default function SetPage() {
+function SetPageContent() {
+	const searchParams = useSearchParams();
+	return <SetPageInner searchParams={searchParams} />;
+}
+
+export default function OptSetsPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<SetPageContent />
+		</Suspense>
+	);
+}
+
+function SetPageInner({ searchParams }) {
 	const router = useRouter();
 	const { user } = useAuth();
-	const searchParams = useSearchParams();
 	const [setData, setSetData] = useState(null);
 	const [trades, setTrades] = useState([]);
 	const [graphData, setGraphData] = useState([]);
